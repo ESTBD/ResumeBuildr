@@ -9,6 +9,7 @@ const year = new Date().getFullYear();
             <article>
                 Frontend by <a href="https://github.com/Atia-Farha" target="_blank">Atia Farha</a>
             </article>
+            
             <article>
                 Backend by <a href="https://github.com/smsadat-dev" target="_blank">S.M. Nazmus Sadat</a>
             </article>
@@ -35,7 +36,9 @@ footer {
     gap: 2em;
 }
 
-article, a, .copyright {
+article,
+a,
+.copyright {
     font-family: 'Doto', monospace;
     font-weight: 500;
 }

@@ -14,5 +14,5 @@ useHead({
 </script>
 
 <template>
-    <div>Hello</div>
+    <FormContainer />
 </template>
