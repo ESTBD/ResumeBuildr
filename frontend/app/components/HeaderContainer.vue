@@ -1,8 +1,15 @@
+<script setup>
+import { useResumeStore } from '~/stores/formStore'
+const store = useResumeStore()
+</script>
+
 <template>
     <header>
         <NuxtLink to="/">
             <h1>Resume Buildr</h1>
         </NuxtLink>
+
+        <button type="button" class="reset-btn" @click="store.reset">Reset Form</button>
     </header>
 </template>
 
@@ -21,5 +28,16 @@ header {
 h1 {
     font-family: 'Doto', monospace;
     font-weight: 500;
+}
+
+.reset-btn {
+    border: 1.5px dotted #f44336;
+    color: #f44336;
+    transition: background-color 0.7s ease, color 0.7s ease;
+}
+
+.reset-btn:hover {
+    background-color: #f44336;
+    color: white;
 }
 </style>
