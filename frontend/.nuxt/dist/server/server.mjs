@@ -1,0 +1,1 @@
+export { default } from "file:///home/pancake/Projects/ResumeBuildr/frontend/node_modules/@nuxt/vite-builder/dist/runtime/vite-node.mjs"
