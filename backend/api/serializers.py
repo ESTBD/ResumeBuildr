@@ -109,12 +109,12 @@ class CVformSerializer(serializers.ModelSerializer):
                      
     def create(self, validated_data):
 
-        achievements_data = validated_data.pop("achievements")
-        contacts_data = validated_data.pop("contacts")
-        educations_data = validated_data.pop("educations")
-        experiences_data = validated_data.pop("experiences")
-        projects_data = validated_data.pop("projects")
-        skills_data = validated_data.pop("skills") 
+        achievements_data = validated_data.pop("achievements", [])
+        contacts_data = validated_data.pop("contacts", [])
+        educations_data = validated_data.pop("educations", [])
+        experiences_data = validated_data.pop("experiences", [])
+        projects_data = validated_data.pop("projects", [])
+        skills_data = validated_data.pop("skills", []) 
 
         cvform = CVform.objects.create(**validated_data) 
 
@@ -135,4 +135,6 @@ class CVformSerializer(serializers.ModelSerializer):
             cvform.projects.create(**p) # type: ignore
 
         for s in skills_data:
-            cvform.skills.create(**s) # type: ignore
+            cvform.skills.create(**s) # type: ignore 
+
+        return cvform
