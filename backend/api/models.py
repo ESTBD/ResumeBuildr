@@ -17,14 +17,14 @@ class CVform(models.Model):
 
 class Achievements(models.Model):
 
-    achievement_name = models.CharField(max_length=128)
-    achievement_time = models.CharField(max_length=64)
+    achievement_name = models.CharField(max_length=128, blank=True, null=True)
+    achievement_time = models.CharField(max_length=64, blank=True, null=True)
     cvform = models.ForeignKey(CVform, on_delete=models.CASCADE, related_name='achievements')
 
 class Contact(models.Model):
 
-    platform_name = models.CharField(max_length=128, null=True)
-    profile_link = models.CharField(max_length=128, null=True) 
+    platform_name = models.CharField(max_length=128, blank=True, null=True)
+    profile_link = models.CharField(max_length=128, blank=True, null=True) 
     cvform = models.ForeignKey(CVform, on_delete=models.CASCADE, related_name='contacts')
 
 
@@ -32,11 +32,11 @@ class Education(models.Model):
 
     RESULT_TYPE = [('C', 'cgpa'), ('G', 'gpa')]
 
-    schoolname = models.CharField(max_length=128)
-    degree = models.CharField(max_length=64)
-    starttime = models.CharField(max_length=64)
-    endtime = models.CharField(max_length=64)
-    result_type = models.CharField(max_length=32, choices=RESULT_TYPE, default='C')
+    schoolname = models.CharField(max_length=128, blank=True, null=True)
+    degree = models.CharField(max_length=64, blank=True, null=True)
+    starttime = models.CharField(max_length=64, blank=True, null=True)
+    endtime = models.CharField(max_length=64, blank=True, null=True)
+    result_type = models.CharField(max_length=32, choices=RESULT_TYPE, default='C', blank=True, null=True)
     score = models.IntegerField()
     cvform = models.ForeignKey(CVform, on_delete=models.CASCADE, related_name='educations')
 
@@ -52,17 +52,17 @@ class Experience(models.Model):
 
 class Project(models.Model):
 
-    project_name = models.CharField(max_length=128)
-    project_link = models.CharField(max_length=128)
-    project_starttime = models.CharField(max_length=64)
-    project_endtime = models.CharField(max_length=64)
-    project_description = models.TextField() 
+    project_name = models.CharField(max_length=128, blank=True, null=True)
+    project_link = models.CharField(max_length=128, blank=True, null=True)
+    project_starttime = models.CharField(max_length=64, blank=True, null=True)
+    project_endtime = models.CharField(max_length=64, blank=True, null=True)
+    project_description = models.TextField(blank=True, null=True) 
     cvform = models.ForeignKey(CVform, on_delete=models.CASCADE, related_name='projects')
     
 
 class Skill(models.Model):
 
-    skills = models.TextField()
+    skills = models.TextField(blank=True, null=True)
     cvform = models.ForeignKey(CVform, on_delete=models.CASCADE, related_name='skills')
 
 
