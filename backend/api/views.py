@@ -2,7 +2,9 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from .models import CVform
-from .serializers import CVformSerializer
+from .serializers import CVformSerializer 
+
+from phonenumber_field.serializerfields import PhoneNumberField
 
 from google import genai 
 
@@ -29,5 +31,19 @@ class CVformViewSet(viewsets.ModelViewSet):
         cvform = serializer.save() 
 
         # API response
-        response_data = {"message": "Form retrieved!"} 
+        response_data = {
+            "message": "Form retrieved!", 
+            "Name": cvform.firstname + " " + cvform.lastname,
+            "Mail": cvform.email, 
+        #    "Mobile": cvform.phone, 
+            "Address": cvform.address, 
+            "Work": cvform.jobtitle,
+            "Achievements": achievements_data, 
+            "Contacts": contacts_data, 
+            "Education": educations_data, 
+            "Experiences": experiences_data, 
+            "Projects": projects_data, 
+            "Skills": skills_data,
+        } 
+
         return Response(response_data, status=201)
