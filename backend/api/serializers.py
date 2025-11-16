@@ -109,6 +109,10 @@ class CVformSerializer(serializers.ModelSerializer):
                      
     def create(self, validated_data):
 
+
+
+        # default set to [] aka empty field
+
         achievements_data = validated_data.pop("achievements", [])
         contacts_data = validated_data.pop("contacts", [])
         educations_data = validated_data.pop("educations", [])
@@ -135,6 +139,9 @@ class CVformSerializer(serializers.ModelSerializer):
             cvform.projects.create(**p) # type: ignore
 
         for s in skills_data:
+
+
             cvform.skills.create(**s) # type: ignore 
 
+        # must return object
         return cvform
