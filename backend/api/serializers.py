@@ -132,7 +132,7 @@ class CVformSerializer(serializers.ModelSerializer):
             cvform.educations.create(**ed) # type: ignore
 
         for ex in experiences_data:
-            cvform.experiences.create(**ed) # type: ignore
+            cvform.experiences.create(**ex) # type: ignore
 
         for p in projects_data:
             cvform.projects.create(**p) # type: ignore

@@ -11,7 +11,7 @@ class CVform(models.Model):
     lastname = models.CharField(max_length=128, blank=False, null=False) 
     email = models.EmailField(blank=False, null=False)
     phone = modelfields.PhoneNumber()
-    address = models.CharField(max_length=256, blank=False, null=False)
+    address = models.CharField(max_length=256, blank=False, null=False) # TODO: change address field permission
     jobtitle = models.CharField(max_length=128, blank=False, null=False)
 
 
