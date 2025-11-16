@@ -29,5 +29,19 @@ class CVformViewSet(viewsets.ModelViewSet):
         cvform = serializer.save() 
 
         # API response
-        response_data = {"message": "Form retrieved!"} 
+        response_data = {
+            "message": "Form retrieved!", 
+            "Name": cvform.firstname + " " + cvform.lastname,
+            "Mail": cvform.email, 
+        #    "Mobile": cvform.phone, 
+            "Address": cvform.address, 
+            "Work": cvform.jobtitle,
+            "Achievements": achievements_data, 
+            "Contacts": contacts_data, 
+            "Education": educations_data, 
+            "Experiences": experiences_data, 
+            "Projects": projects_data, 
+            "Skills": skills_data,
+        } 
+
         return Response(response_data, status=201)
