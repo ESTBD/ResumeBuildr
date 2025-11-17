@@ -30,7 +30,6 @@ class CVformViewSet(viewsets.ModelViewSet):
         # Create object using serializer's create()
         cvform = serializer.save() 
 
-
         achievements = ""
         contacts = ""
         educations = ""
@@ -42,51 +41,53 @@ class CVformViewSet(viewsets.ModelViewSet):
             achievements = "Achievements: "
 
             for achievement in achievements_data:
-                achievements += 'Name: ' + achievement.get("achievement_name") + ' '
-                achievements += 'Time: ' + achievement.get("achievement_time") + ' '
+                achievements += f"Name: {achievement.get('achievement_name') or ''} "
+                achievements += f"Time: {achievement.get('achievement_time') or ''} "
 
         if contacts_data: 
             contacts = "Contacts: "
 
             for contact in contacts_data:
-                contacts += "Platform: " + contact.get("platform_name") + ' '
-                contacts += "Link: " + contact.get("profile_link") + ' '
-
+                contacts += f"Platform: {contact.get('platform_name') or ''} "
+                contacts += f"URL: {contact.get('profile_link') or ''} "
+                
         if educations_data: 
             educations = "Educations: "
 
             for education in educations_data:
-                educations += "School/College: " + education.get("schoolname") + ' '
-                educations += "Degree: " + education.get("degree") + ' '
-                educations += "Start: " + education.get("starttime") + ' '
-                educations += "End: " + education.get("endtime") + ' '
-                educations += "Result: " + education.get("result_type") + "Score: " + education.get("score") + ' '
+                educations += f"School/College: {education.get('schoolname') or ''} "
+                educations += f"Degree: {education.get('degree') or ''} "
+                educations += f"Start: {education.get('starttime') or ''} "
+                educations += f"End: {education.get('endtime') or ''} "
+                educations += f"Result: {education.get('result_type') or ''} "
+                educations += f"Score: {education.get('score') or ''} "
+
 
         if experiences_data: 
             experiences = "Experiences: "
 
             for experience in experiences_data:
-                experiences += "Company: " + experience.get("company") + ' '
-                experiences += "Role: " + experience.get("role") + ' '
-                experiences += "Start: " + experience.get("job_starttime") + ' '
-                experiences += "End: " + experience.get("job_endtime") + ' '
-                experiences += "Description: " + experience.get("description") + ' ' 
+                experiences += f"Company: {experience.get("company") or ''} " 
+                experiences += f"Role: {experience.get("role") or ''}"
+                experiences += f"Start: {experience.get("job_starttime") or ''} "
+                experiences += f"End: {experience.get("job_endtime") or ''} "
+                experiences += f"Description: {experience.get("description") or ''} "
 
         if projects_data: 
-            projects = "Experiences: "
+            projects = "Projects: "
 
             for project in projects_data:
-                projects += "Company: " + project.get("project_name") + ' '
-                projects += "Role: " + project.get("project_link") + ' '
-                projects += "Start: " + project.get("project_starttime") + ' '
-                projects += "End: " + project.get("project_endtime") + ' '
-                projects += "Description: " + project.get("project_description") + ' '
+                projects += f"Project: {project.get("project_name") or ''} "
+                projects += f"URL: {project.get("project_link") or ''} " 
+                projects += f"Start: {project.get("project_starttime") or ''}"
+                projects += f"End: {project.get("project_endtime") or ''} "
+                projects += f"Description: {project.get("project_description") or ''} "  
 
         if skills_data:
             skills = "Skills: "
 
             for skill in skills_data:
-                skills += "Skills: " + skill.get("skills") + ' '
+                skills += f"Skills: {skill.get("skills") or ''} "  
 
 
         # API response 
@@ -98,7 +99,7 @@ class CVformViewSet(viewsets.ModelViewSet):
             f"Current work: {cvform.jobtitle} "
             f"Achievements: {achievements}"
             f"Contacts: {contacts}"
-            f"Educations: {education}" 
+            f"Educations: {educations}" 
             f"Experiences: {experiences}"
             f"Projects: {projects}"
             f"Skills: {skills}" 
