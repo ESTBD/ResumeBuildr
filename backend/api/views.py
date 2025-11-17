@@ -30,20 +30,30 @@ class CVformViewSet(viewsets.ModelViewSet):
         # Create object using serializer's create()
         cvform = serializer.save() 
 
-        # API response
+
+        achievements = ""
+        contacts = ""
+        educations = ""
+        experiences = ""
+        projects = ""
+        skills = ""
+
+        if achievements_data : 
+            achievements = "Achievements: \n"
+
+            for achievement in achievements_data:
+                achievements += 'Name: ' + achievement.get("achievement_name") + ' '
+                achievements += 'Time: ' + achievement.get("achievement_time")
+                achievements += '\n'
+
+        # API response 
         response_data = {
-            "message": "Form retrieved!", 
-            "Name": cvform.firstname + " " + cvform.lastname,
-            "Mail": cvform.email, 
-        #    "Mobile": cvform.phone, 
-            "Address": cvform.address, 
-            "Work": cvform.jobtitle,
-            "Achievements": achievements_data, 
-            "Contacts": contacts_data, 
-            "Education": educations_data, 
-            "Experiences": experiences_data, 
-            "Projects": projects_data, 
-            "Skills": skills_data,
-        } 
+            "prompt": "Make a CV for using following information "
+            f"Name: {cvform.firstname} {cvform.lastname} "
+            f"Email address: {cvform.email} "
+            f"Home address: {cvform.address} "
+            f"Current work: {cvform.jobtitle} "
+            f"Achievements: {achievements}"
+        }
 
         return Response(response_data, status=201)
