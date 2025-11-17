@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from rest_framework import serializers
 from .models import CVform, Achievements, Contact, Education, Experience, Project, Skill
 
@@ -143,3 +144,6 @@ class CVformSerializer(serializers.ModelSerializer):
 
         # must return object
         return cvform
+=======
+from rest_framework import serializers
+>>>>>>> feature/backend

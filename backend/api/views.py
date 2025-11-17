@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+<<<<<<< HEAD
 from .models import CVform
 from .serializers import CVformSerializer 
 
@@ -106,3 +107,6 @@ class CVformViewSet(viewsets.ModelViewSet):
         }
 
         return Response(response_data, status=201)
+=======
+
+>>>>>>> feature/backend
