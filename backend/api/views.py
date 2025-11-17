@@ -39,12 +39,55 @@ class CVformViewSet(viewsets.ModelViewSet):
         skills = ""
 
         if achievements_data : 
-            achievements = "Achievements: \n"
+            achievements = "Achievements: "
 
             for achievement in achievements_data:
                 achievements += 'Name: ' + achievement.get("achievement_name") + ' '
-                achievements += 'Time: ' + achievement.get("achievement_time")
-                achievements += '\n'
+                achievements += 'Time: ' + achievement.get("achievement_time") + ' '
+
+        if contacts_data: 
+            contacts = "Contacts: "
+
+            for contact in contacts_data:
+                contacts += "Platform: " + contact.get("platform_name") + ' '
+                contacts += "Link: " + contact.get("profile_link") + ' '
+
+        if educations_data: 
+            educations = "Educations: "
+
+            for education in educations_data:
+                educations += "School/College: " + education.get("schoolname") + ' '
+                educations += "Degree: " + education.get("degree") + ' '
+                educations += "Start: " + education.get("starttime") + ' '
+                educations += "End: " + education.get("endtime") + ' '
+                educations += "Result: " + education.get("result_type") + "Score: " + education.get("score") + ' '
+
+        if experiences_data: 
+            experiences = "Experiences: "
+
+            for experience in experiences_data:
+                experiences += "Company: " + experience.get("company") + ' '
+                experiences += "Role: " + experience.get("role") + ' '
+                experiences += "Start: " + experience.get("job_starttime") + ' '
+                experiences += "End: " + experience.get("job_endtime") + ' '
+                experiences += "Description: " + experience.get("description") + ' ' 
+
+        if projects_data: 
+            projects = "Experiences: "
+
+            for project in projects_data:
+                projects += "Company: " + project.get("project_name") + ' '
+                projects += "Role: " + project.get("project_link") + ' '
+                projects += "Start: " + project.get("project_starttime") + ' '
+                projects += "End: " + project.get("project_endtime") + ' '
+                projects += "Description: " + project.get("project_description") + ' '
+
+        if skills_data:
+            skills = "Skills: "
+
+            for skill in skills_data:
+                skills += "Skills: " + skill.get("skills") + ' '
+
 
         # API response 
         response_data = {
@@ -54,6 +97,11 @@ class CVformViewSet(viewsets.ModelViewSet):
             f"Home address: {cvform.address} "
             f"Current work: {cvform.jobtitle} "
             f"Achievements: {achievements}"
+            f"Contacts: {contacts}"
+            f"Educations: {education}" 
+            f"Experiences: {experiences}"
+            f"Projects: {projects}"
+            f"Skills: {skills}" 
         }
 
         return Response(response_data, status=201)
