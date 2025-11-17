@@ -22,5 +22,5 @@ from api import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.CVformViewSet.as_view({'get': 'list', 'post': 'create'}), name="cvform"),
+    path('', views.HTMLtoPDFView.as_view({'get': 'list'}), name="getpdf"),
 ]
