@@ -1,25 +1,10 @@
 <script setup>
 import { useResumeStore } from '~/stores/formStore'
 const store = useResumeStore()
-
-// const cv = document.querySelector('.resume');
-
-// function scaleCV() {
-//     const scale = Math.min(
-//         window.innerWidth / cv.offsetWidth,
-//         window.innerHeight / cv.offsetHeight,
-//         1
-//     );
-//     cv.style.transform = `scale(${scale})`;
-// }
-
-// window.addEventListener('resize', scaleCV);
-// window.addEventListener('load', scaleCV);
 </script>
 
 <template>
-
-    <div id="resume-preview" class="resume">
+    <div class="resume">
         <div v-if="store.firstName.length || store.lastName.length">
             <h1 class="name">{{ store.firstName }} {{ store.lastName }}</h1>
         </div>
@@ -85,6 +70,11 @@ const store = useResumeStore()
 
 <style scoped>
 * {
+    margin: 0;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
     font-family: monospace;
     font-size: 11px;
     flex-wrap: wrap;
@@ -95,7 +85,7 @@ const store = useResumeStore()
     min-height: 297mm;
     margin: auto;
     padding: 35px;
-    background: #fff;
+    background-color: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     transform-origin: top left;
     display: flex;
@@ -106,6 +96,8 @@ const store = useResumeStore()
 
 @media print {
     .resume {
+        width: 210mm;
+        min-height: 297mm;
         transform: none !important;
         box-shadow: none;
     }
@@ -132,6 +124,11 @@ h3 {
 
 h4 {
     font-size: 14px;
+}
+
+a {
+    color: black;
+    text-decoration: none;
 }
 
 .primary-info,
