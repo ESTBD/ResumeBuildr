@@ -13,46 +13,37 @@ onMounted(() => {
 })
 
 const submitForm = async () => {
-    const resumeData = {
-        firstname: store.firstName,
-        lastname: store.lastName,
-        email: store.email,
-        address: store.address,
-        jobtitle: store.jobTitle,
-        contacts: store.contacts.map(contact => ({
-            platform_name: contact.platform,
-            profile_link: contact.link
-        })),
-        educations: store.educations.map(edu => ({
-            school_name: edu.school,
-            degree: edu.degree,
-            start_time: edu.sYearMonth,
-            end_time: edu.eYearMonth,
-            result_type: edu.resultType,
-            score: edu.score
-        })),
-        experiences: store.experiences.map(exp => ({
-            company: exp.company,
-            role: exp.role,
-            start_time: exp.sYearMonth,
-            end_time: exp.eYearMonth,
-            description: exp.desc
-        })),
-        projects: store.projects.map(pro => ({
-            project_name: pro.name,
-            project_link: pro.link,
-            project_starttime: pro.sYearMonth,
-            project_endtime: pro.eYearMonth,
-            project_description: pro.desc
-        })),
-        skills: store.skills.map(skill => ({
-            skills: skill.name
-        })),
-        achievements: store.achievements.map(ach => ({
-            achievement_name: ach.title,
-            achievement_time: ach.yearMonth
-        }))
+    const el = document.getElementById('resume-preview')
+
+    if (!el) {
+        alert("Resume preview not found!")
+        return
     }
+
+    const rawHTML = el.outerHTML
+
+    const styles = Array.from(document.styleSheets)
+        .map(sheet => {
+            try {
+                return Array.from(sheet.cssRules)
+                    .map(rule => rule.cssText)
+                    .join('\n')
+            } catch {
+                return ''
+            }
+        })
+        .join('\n')
+
+    const fullHTML = `
+        <html>
+        <head>
+            <style>${styles}</style>
+        </head>
+        <body>
+            ${rawHTML}
+        </body>
+        </html>
+    `
 
     try {
         const response = await fetch('http://localhost:8000/', {
@@ -60,220 +51,239 @@ const submitForm = async () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(resumeData)
+            body: JSON.stringify({ html: fullHTML })
         })
 
-        const result = await response.json()
-        console.log(result)
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = url
+        a.download = 'resume.pdf'
+        a.click()
     } catch (error) {
-        console.log(error)
+        console.error(error)
     }
 }
 </script>
 
 <template>
-    <section class="container">
-        <h2>Build Your Resume</h2>
-
-        <form @submit.prevent="submitForm">
-            <AccordionItem title="Personal Info" defaultOpen>
-                <div class="info">
-                    <div class="input-grp">
-                        <label for="f-name">First Name</label>
-                        <input id="f-name" v-model="store.firstName" type="text" required>
-                    </div>
-                    <div class="input-grp">
-                        <label for="l-name">Last Name</label>
-                        <input id="l-name" v-model="store.lastName" type="text" required>
-                    </div>
-                    <div class="input-grp">
-                        <label for="email">Email</label>
-                        <input id="email" v-model="store.email" type="email" required>
-                    </div>
-                    <div class="input-grp">
-                        <label for="phone">Phone</label>
-                        <input id="phone" v-model="store.phone" type="tel">
-                    </div>
-                    <div class="input-grp">
-                        <label for="address">Address</label>
-                        <input id="address" v-model="store.address" type="text">
-                    </div>
-                    <div class="input-grp">
-                        <label for="job">Job Title</label>
-                        <input id="job" v-model="store.jobTitle" type="text" required>
-                    </div>
+    <form @submit.prevent="submitForm">
+        <AccordionItem title="Personal Info" defaultOpen>
+            <div class="info">
+                <div class="input-grp">
+                    <label for="f-name">First Name</label>
+                    <input id="f-name" v-model="store.firstName" type="text" maxlength="32" required>
                 </div>
-
-                <div class="contacts">
-                    <h4>Contacts</h4>
-
-                    <div v-for="(contact, index) in store.contacts" :key="index" class="dynamic-item">
-                        <div class="items">
-                            <div class="input-grp">
-                                <label :for="'p-name-' + index">Platform Name</label>
-                                <input :id="'p-name-' + index" v-model="contact.platform" type="text">
-                            </div>
-                            <div class="input-grp">
-                                <label :for="'p-link-' + index">Profile Link</label>
-                                <input :id="'p-link-' + index" v-model="contact.link" type="text">
-                            </div>
-                        </div>
-                        <button type="button" class="delete-btn" @click="store.deleteContact(index)">Delete</button>
-                    </div>
-
-                    <button type="button" class="add-btn" @click="store.addContact">Add Contact</button>
+                <div class="input-grp">
+                    <label for="l-name">Last Name</label>
+                    <input id="l-name" v-model="store.lastName" type="text" maxlength="32" required>
                 </div>
-            </AccordionItem>
+                <div class="input-grp">
+                    <label for="email">Email</label>
+                    <input id="email" v-model="store.email" type="email" maxlength="128" required>
+                </div>
+                <div class="input-grp">
+                    <label for="phone">Phone</label>
+                    <input id="phone" v-model="store.phone" type="tel" maxlength="32" required>
+                </div>
+                <div class="input-grp">
+                    <label for="address">Address</label>
+                    <input id="address" v-model="store.address" type="text" maxlength="512">
+                </div>
+                <div class="input-grp">
+                    <label for="job">Job Title</label>
+                    <input id="job" v-model="store.jobTitle" type="text" maxlength="128" required>
+                </div>
+            </div>
 
-            <AccordionItem title="Education">
-                <div v-for="(edu, index) in store.educations" :key="index" class="dynamic-item">
+            <div class="contacts">
+                <h4>Contacts</h4>
+
+                <div v-for="(contact, index) in store.contacts" :key="index" class="dynamic-item">
                     <div class="items">
                         <div class="input-grp">
-                            <label :for="'school-' + index">School Name</label>
-                            <input :id="'school-' + index" v-model="edu.school" type="text">
+                            <label :for="'p-name-' + index">Platform Name</label>
+                            <input :id="'p-name-' + index" v-model="contact.platform" type="text" maxlength="64">
                         </div>
                         <div class="input-grp">
-                            <label :for="'degree-' + index">Degree</label>
-                            <input :id="'degree-' + index" v-model="edu.degree" type="text">
+                            <label :for="'p-username-' + index">Username</label>
+                            <input :id="'p-username-' + index" v-model="contact.username" type="text" maxlength="64">
                         </div>
                         <div class="input-grp">
-                            <label :for="'edu-start-' + index">Starting Time</label>
-                            <input :id="'edu-start-' + index" v-model="edu.sYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'edu-end-' + index">Ending Time</label>
-                            <input :id="'edu-end-' + index" v-model="edu.eYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'result-' + index">Result Type</label>
-                            <select :id="'result-' + index" v-model="edu.resultType">
-                                <option value="CGPA">CGPA</option>
-                                <option value="GPA">GPA</option>
-                            </select>
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'score-' + index">Score</label>
-                            <input :id="'score-' + index" v-model="edu.score" type="number" step="0.01">
+                            <label :for="'p-link-' + index">Profile Link</label>
+                            <input :id="'p-link-' + index" v-model="contact.link" type="text" maxlength="256">
                         </div>
                     </div>
 
-                    <button type="button" class="delete-btn" @click="store.deleteEducation(index)">Delete</button>
+                    <button type="button" class="delete-btn" @click="store.deleteContact(index)">Delete</button>
                 </div>
 
-                <button type="button" class="add-btn" @click="store.addEducation">Add Education</button>
-            </AccordionItem>
+                <button v-if="store.contacts.length < 8" type="button" class="add-btn" @click="store.addContact">Add Contact</button>
 
-            <AccordionItem title="Experience">
-                <div v-for="(exp, index) in store.experiences" :key="index" class="dynamic-item">
-                    <div class="items">
-                        <div class="input-grp">
-                            <label :for="'company-' + index">Company</label>
-                            <input :id="'company-' + index" v-model="exp.company" type="text">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'role-' + index">Role</label>
-                            <input :id="'role-' + index" v-model="exp.role" type="text">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'exp-start-' + index">Starting Time</label>
-                            <input :id="'exp-start-' + index" v-model="exp.sYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'exp-end-' + index">Ending Time</label>
-                            <input :id="'exp-end-' + index" v-model="exp.eYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'exp-desc-' + index">Description</label>
-                            <textarea :id="'exp-desc-' + index" v-model="exp.desc" rows="3" />
-                        </div>
+                <div v-if="store.contacts.length >= 8" class="limit-info">Reached limit of 8</div>
+            </div>
+        </AccordionItem>
+
+        <AccordionItem title="Education">
+            <div v-for="(edu, index) in store.educations" :key="index" class="dynamic-item">
+                <div class="items">
+                    <div class="input-grp">
+                        <label :for="'inst-' + index">Institution Name</label>
+                        <input :id="'inst-' + index" v-model="edu.inst" type="text" maxlength="256">
                     </div>
-
-                    <button type="button" class="delete-btn" @click="store.deleteExperience(index)">Delete</button>
-                </div>
-
-                <button type="button" class="add-btn" @click="store.addExperience">Add Experience</button>
-            </AccordionItem>
-
-            <AccordionItem title="Skills">
-                <div v-for="(skill, index) in store.skills" :key="index" class="dynamic-item">
-                    <div class="items">
-                        <div class="input-grp">
-                            <label :for="'skill-' + index">Skill</label>
-                            <input :id="'skill-' + index" v-model="skill.name" type="text">
-                        </div>
+                    <div class="input-grp">
+                        <label :for="'inst-location-' + index">Location</label>
+                        <input :id="'inst-location-' + index" v-model="edu.location" type="text" maxlength="512">
                     </div>
-
-                    <button type="button" class="delete-btn" @click="store.deleteSkill(index)">Delete</button>
-                </div>
-
-                <button type="button" class="add-btn" @click="store.addSkill">Add Skill</button>
-            </AccordionItem>
-
-            <AccordionItem title="Projects">
-                <div v-for="(pro, index) in store.projects" :key="index" class="dynamic-item">
-                    <div class="items">
-                        <div class="input-grp">
-                            <label :for="'p-name-' + index">Project Name</label>
-                            <input :id="'p-name-' + index" v-model="pro.name" type="text">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'p-link-' + index">Project Link</label>
-                            <input :id="'p-link-' + index" v-model="pro.link" type="text">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'pro-start-' + index">Starting Time</label>
-                            <input :id="'pro-start-' + index" v-model="pro.sYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'pro-end-' + index">Ending Time</label>
-                            <input :id="'pro-end-' + index" v-model="pro.eYearMonth" type="month">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'pro-desc-' + index">Description</label>
-                            <textarea :id="'pro-desc-' + index" v-model="pro.desc" rows="3" />
-                        </div>
+                    <div class="input-grp">
+                        <label :for="'degree-' + index">Degree</label>
+                        <input :id="'degree-' + index" v-model="edu.degree" type="text" maxlength="256">
                     </div>
-
-                    <button type="button" class="delete-btn" @click="store.deleteProject(index)">Delete</button>
-                </div>
-
-                <button type="button" class="add-btn" @click="store.addProject">Add Project</button>
-            </AccordionItem>
-
-            <AccordionItem title="Achievements">
-                <div v-for="(ach, index) in store.achievements" :key="index" class="dynamic-item">
-                    <div class="items">
-                        <div class="input-grp">
-                            <label :for="'achievement-' + index">Achievement</label>
-                            <input :id="'achievement-' + index" v-model="ach.title" type="text">
-                        </div>
-                        <div class="input-grp">
-                            <label :for="'ach-time-' + index">Time</label>
-                            <input :id="'ach-time-' + index" v-model="ach.yearMonth" type="month">
-                        </div>
+                    <div class="input-grp">
+                        <label :for="'sub-' + index">Subject</label>
+                        <input :id="'sub-' + index" v-model="edu.sub" type="text" maxlength="128">
                     </div>
-
-                    <button type="button" class="delete-btn" @click="store.deleteAchievement(index)">Delete</button>
+                    <div class="input-grp">
+                        <label :for="'edu-start-' + index">Starting Time</label>
+                        <input :id="'edu-start-' + index" v-model="edu.sYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'edu-end-' + index">Ending Time</label>
+                        <input :id="'edu-end-' + index" v-model="edu.eYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'result-' + index">Result Type</label>
+                        <select :id="'result-' + index" v-model="edu.resultType">
+                            <option value="CGPA">CGPA</option>
+                            <option value="GPA">GPA</option>
+                        </select>
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'score-' + index">Score</label>
+                        <input :id="'score-' + index" v-model="edu.score" type="number" min="0" max="10" step="0.01">
+                    </div>
                 </div>
 
-                <button type="button" class="add-btn" @click="store.addAchievement">Add Achievement</button>
-            </AccordionItem>
+                <button type="button" class="delete-btn" @click="store.deleteEducation(index)">Delete</button>
+            </div>
 
-            <button type="submit" class="submit-btn">Generate Resume</button>
-        </form>
-    </section>
+            <button v-if="store.educations.length < 8" type="button" class="add-btn" @click="store.addEducation">Add Education</button>
+
+            <div v-if="store.educations.length >= 8" class="limit-info">Reached limit of 8</div>
+        </AccordionItem>
+
+        <AccordionItem title="Experience">
+            <div v-for="(exp, index) in store.experiences" :key="index" class="dynamic-item">
+                <div class="items">
+                    <div class="input-grp">
+                        <label :for="'company-' + index">Company</label>
+                        <input :id="'company-' + index" v-model="exp.company" type="text" maxlength="256">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'role-' + index">Role</label>
+                        <input :id="'role-' + index" v-model="exp.role" type="text" maxlength="128">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'exp-start-' + index">Starting Time</label>
+                        <input :id="'exp-start-' + index" v-model="exp.sYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'exp-end-' + index">Ending Time</label>
+                        <input :id="'exp-end-' + index" v-model="exp.eYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'exp-desc-' + index">Description</label>
+                        <textarea :id="'exp-desc-' + index" v-model="exp.desc" rows="3" maxlength="3000" />
+                    </div>
+                </div>
+
+                <button type="button" class="delete-btn" @click="store.deleteExperience(index)">Delete</button>
+            </div>
+
+            <button v-if="store.experiences.length < 16" type="button" class="add-btn" @click="store.addExperience">Add Experience</button>
+
+            <div v-if="store.experiences.length >= 16" class="limit-info">Reached limit of 16</div>
+        </AccordionItem>
+
+        <AccordionItem title="Skills">
+            <div v-for="(skill, index) in store.skills" :key="index" class="dynamic-item">
+                <div class="items">
+                    <div class="input-grp">
+                        <label :for="'skill-' + index">Skill</label>
+                        <input :id="'skill-' + index" v-model="skill.name" type="text" maxlength="1024">
+                    </div>
+                </div>
+
+                <button type="button" class="delete-btn" @click="store.deleteSkill(index)">Delete</button>
+            </div>
+
+            <button v-if="store.skills.length < 8" type="button" class="add-btn" @click="store.addSkill">Add Skill</button>
+
+            <div v-if="store.skills.length >= 8" class="limit-info">Reached limit of 8</div>
+        </AccordionItem>
+
+        <AccordionItem title="Projects">
+            <div v-for="(pro, index) in store.projects" :key="index" class="dynamic-item">
+                <div class="items">
+                    <div class="input-grp">
+                        <label :for="'p-name-' + index">Project Name</label>
+                        <input :id="'p-name-' + index" v-model="pro.name" type="text" maxlength="128">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'p-link-' + index">Project Link</label>
+                        <input :id="'p-link-' + index" v-model="pro.link" type="text" maxlength="256">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'pro-start-' + index">Starting Time</label>
+                        <input :id="'pro-start-' + index" v-model="pro.sYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'pro-end-' + index">Ending Time</label>
+                        <input :id="'pro-end-' + index" v-model="pro.eYearMonth" type="month">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'pro-desc-' + index">Description</label>
+                        <textarea :id="'pro-desc-' + index" v-model="pro.desc" rows="3" maxlength="3000" />
+                    </div>
+                </div>
+
+                <button type="button" class="delete-btn" @click="store.deleteProject(index)">Delete</button>
+            </div>
+
+            <button v-if="store.projects.length < 16" type="button" class="add-btn" @click="store.addProject">Add Project</button>
+
+            <div v-if="store.projects.length >= 16" class="limit-info">Reached limit of 16</div>
+        </AccordionItem>
+
+        <AccordionItem title="Achievements">
+            <div v-for="(ach, index) in store.achievements" :key="index" class="dynamic-item">
+                <div class="items">
+                    <div class="input-grp">
+                        <label :for="'achievement-' + index">Achievement</label>
+                        <input :id="'achievement-' + index" v-model="ach.title" type="text" maxlength="1024">
+                    </div>
+                    <div class="input-grp">
+                        <label :for="'ach-time-' + index">Time</label>
+                        <input :id="'ach-time-' + index" v-model="ach.yearMonth" type="month">
+                    </div>
+                </div>
+
+                <button type="button" class="delete-btn" @click="store.deleteAchievement(index)">Delete</button>
+            </div>
+
+            <button v-if="store.achievements.length < 32" type="button" class="add-btn" @click="store.addAchievement">Add Achievement</button>
+
+            <div v-if="store.achievements.length >= 32" class="limit-info">Reached limit of 32</div>
+        </AccordionItem>
+
+        <button type="submit" class="submit-btn">Generate Resume</button>
+
+        <ResumeContainer/>
+    </form>
 </template>
 
 <style scoped>
-.container {
-    width: clamp(0px, 100%, 900px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2em;
-}
-
 form {
     width: 100%;
     display: flex;
@@ -337,7 +347,7 @@ select {
 input:focus,
 textarea:focus,
 select:focus {
-    border: 1px solid black;
+    border: 1px solid rgb(33, 150, 243);
 }
 
 .delete-btn {
@@ -370,5 +380,20 @@ select:focus {
 .submit-btn:hover {
     background-color: rgba(33, 150, 243, 0.8);
     color: white;
+}
+
+button:active {
+    transform: scale(0.9);
+}
+
+.limit-info {
+    margin-top: 1em;
+    color: gray;
+    font-size: 1.2em;
+    font-weight: 900;
+    text-align: center;
+    border: 2px dotted gray;
+    border-radius: 3px;
+    padding: 0.5em;
 }
 </style>

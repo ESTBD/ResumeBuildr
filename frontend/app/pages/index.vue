@@ -14,5 +14,5 @@ useHead({
 </script>
 
 <template>
-    <FormContainer />
+    <MakeResume />
 </template>
