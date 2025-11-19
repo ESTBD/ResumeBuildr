@@ -1,6 +1,5 @@
 <script setup>
 import { ref } from 'vue'
-import PreviewContainer from './PreviewContainer.vue';
 
 const activeTab = ref(0)
 </script>

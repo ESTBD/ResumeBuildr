@@ -1,6 +1,9 @@
 <script setup>
 import { useResumeStore } from '~/stores/formStore'
-import { onMounted } from 'vue'
+import { onMounted, ref, nextTick } from 'vue'
+import axios from 'axios'
+
+const resumeRef = ref(null)
 
 const store = useResumeStore()
 
@@ -12,63 +15,46 @@ onMounted(() => {
     })
 })
 
-const submitForm = async () => {
-    const el = document.getElementById('resume-preview')
-
-    if (!el) {
-        alert("Resume preview not found!")
-        return
-    }
-
-    const rawHTML = el.outerHTML
-
-    const styles = Array.from(document.styleSheets)
-        .map(sheet => {
-            try {
-                return Array.from(sheet.cssRules)
-                    .map(rule => rule.cssText)
-                    .join('\n')
-            } catch {
-                return ''
-            }
-        })
-        .join('\n')
-
-    const fullHTML = `
-        <html>
-        <head>
-            <style>${styles}</style>
-        </head>
-        <body>
-            ${rawHTML}
-        </body>
-        </html>
-    `
-
+const downloadPDF = async () => {
     try {
-        const response = await fetch('http://localhost:8000/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ html: fullHTML })
+        await nextTick()
+
+        const el = resumeRef.value
+        if (!el) throw new Error('ResumeContainer not found')
+
+        let htmlContent = el.outerHTML
+
+        const styles = Array.from(el.querySelectorAll('style')).map(s => s.outerHTML).join('\n')
+
+        htmlContent = `
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                            ${styles}
+                        </head>
+                        <body>
+                            ${htmlContent}
+                        </body>
+                        </html>
+                    `
+
+        const blob = new Blob([htmlContent], { type: 'text/html' })
+
+        const formData = new FormData()
+        formData.append('file', blob, 'resume.html')
+
+        const res = await axios.post('http://localhost:8000/', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
         })
-
-        const blob = await response.blob()
-        const url = URL.createObjectURL(blob)
-
-        const a = document.createElement('a')
-        a.href = url
-        a.download = 'resume.pdf'
-        a.click()
-    } catch (error) {
-        console.error(error)
+        console.log(res.data)
+    } catch (err) {
+        console.error('Error sending resume:', err)
     }
 }
 </script>
 
 <template>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="downloadPDF">
         <AccordionItem title="Personal Info" defaultOpen>
             <div class="info">
                 <div class="input-grp">
@@ -279,11 +265,17 @@ const submitForm = async () => {
 
         <button type="submit" class="submit-btn">Generate Resume</button>
 
-        <ResumeContainer/>
+        <div ref="resumeRef" class="hidden">
+            <ResumeContainer />
+        </div>
     </form>
 </template>
 
 <style scoped>
+.hidden {
+    display: none;
+}
+
 form {
     width: 100%;
     display: flex;

@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import ResumeContainer from './ResumeContainer.vue';
-
-</script>
-
 <template>
     <div class="container">
         <ResumeContainer />
